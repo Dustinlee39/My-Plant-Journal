@@ -2,406 +2,348 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Plant Journal</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ChronoGarden – Plant Journal</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    /* ============  BASIC RESET & PAGE STYLES ============ */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f5fff0; /* Light green tint */
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f5f5f5;
       color: #333;
-      margin: 0;
-      padding: 0;
+      padding: 10px;
     }
-
+    body.dark-mode {
+      background: #1e1e1e;
+      color: #e0e0e0;
+    }
     header {
-      background-color: #77b377; /* Green header */
-      color: #fff;
-      padding: 1rem;
       text-align: center;
+      padding: 20px 10px;
+      background: linear-gradient(to right, #74b49b, #a7d7c5);
+      color: white;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      position: relative;
     }
-
-    main {
-      padding: 1rem;
-      max-width: 900px;
-      margin: 0 auto;
+    header h1 { font-size: 1.8em; margin-bottom: 5px; }
+    header p { font-size: 1em; color: #e0ffe9; }
+    .theme-toggle {
+      position: absolute;
+      right: 20px;
+      top: 20px;
     }
-
-    section {
-      margin-bottom: 2rem;
+    .theme-toggle button {
+      padding: 8px 12px;
+      background: #444;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
     }
-
-    h1, h2 {
-      margin-bottom: 1rem;
+    .container {
+      max-width: 800px;
+      margin: auto;
     }
-
-    /* ============  FORM SECTION  ============ */
-    #plant-form {
-      display: flex;
-      flex-direction: column;
-      max-width: 400px;
+    .section {
+      background: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+      padding: 15px;
     }
-
-    #plant-form label {
-      margin-top: 1rem;
+    body.dark-mode .section { background: #2b2b2b; }
+    .section h2 { font-size: 1.4em; margin-bottom: 10px; color: #4a7c59; }
+    label {
+      display: block;
+      margin-top: 10px;
       font-weight: bold;
     }
-
-    #plant-form input,
-    #plant-form textarea {
-      margin-top: 0.5rem;
-      padding: 0.5rem;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-
-    #plant-form button {
-      margin-top: 1rem;
-      padding: 0.75rem;
-      border: none;
-      border-radius: 4px;
-      background-color: #77b377;
-      color: #fff;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-    #plant-form button:hover {
-      background-color: #66a266;
-    }
-
-    /* ============  ENTRIES GRID  ============ */
-    #entries-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 1rem;
-    }
-
-    .plant-card {
-      background-color: #fff;
+    input[type="text"], input[type="date"], textarea {
+      width: 100%;
+      padding: 10px;
       border: 1px solid #ccc;
       border-radius: 6px;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
+      margin-top: 4px;
     }
-
-    .plant-card img {
-      width: 100%;
-      height: auto;
-      object-fit: cover;
-    }
-
-    .card-content {
-      padding: 1rem;
-    }
-
-    .card-content h3 {
-      margin-bottom: 0.5rem;
-      font-size: 1.1rem;
-    }
-
-    .card-actions {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 1rem;
-    }
-
-    .plant-card button {
-      background-color: #77b377;
+    input[type="file"] { margin-top: 8px; }
+    button.submit-btn {
+      margin-top: 15px;
+      padding: 10px 20px;
+      background: #4a7c59;
       color: white;
       border: none;
-      border-radius: 3px;
-      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-size: 1em;
       cursor: pointer;
     }
-
-    .plant-card button:hover {
-      background-color: #66a266;
+    .entry-list {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-top: 20px;
     }
-
-    /* ============  RESPONSIVE DESIGN  ============ */
-    @media (max-width: 600px) {
-      main {
-        padding: 0.5rem;
-      }
-
-      #plant-form {
-        max-width: 100%;
-      }
+    .entry {
+      border-left: 4px solid #4a7c59;
+      padding: 10px 15px;
+      background: #fafafa;
+      border-radius: 6px;
+    }
+    body.dark-mode .entry {
+      background: #333;
+      color: #ccc;
+    }
+    .entry img {
+      max-width: 100%;
+      border-radius: 6px;
+      margin-top: 10px;
+    }
+    .entry-time {
+      font-size: 0.9em;
+      color: #888;
+      margin-bottom: 5px;
+    }
+    .filter-section {
+      margin-bottom: 20px;
+    }
+    .filter-section select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #aaa;
+      border-radius: 6px;
+    }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .gallery-grid img {
+      width: 100%;
+      border-radius: 6px;
+      object-fit: cover;
+    }
+    .export-buttons button {
+      margin-right: 10px;
+      padding: 8px 12px;
+      background: #4a7c59;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .chart-section {
+      background: #ffffff;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+    canvas#careChart {
+      max-width: 100%;
+      margin-top: 20px;
     }
   </style>
 </head>
 <body>
-
   <header>
-    <h1>My Plant Journal</h1>
+    <div class="theme-toggle">
+      <button onclick="toggleTheme()">Toggle Theme</button>
+    </div>
+    <h1>ChronoGarden</h1>
+    <p>Track your plants, care routines, and growth history</p>
   </header>
-
-  <main>
-    <!-- ============  FORM SECTION  ============ -->
-    <section id="plant-form-section">
-      <h2>Add a New Plant</h2>
-      <form id="plant-form">
-        <!-- Image Input -->
-        <label for="plant-image">Plant Photo:</label>
-        <input type="file" id="plant-image" accept="image/*" capture="camera">
-
-        <!-- Scientific Name -->
-        <label for="scientific-name">Scientific Name (Genus species):</label>
-        <input type="text" id="scientific-name" placeholder="e.g., Ficus elastica" required>
-
-        <!-- Common Name -->
-        <label for="common-name">Common Name:</label>
-        <input type="text" id="common-name" placeholder="e.g., Rubber Plant" required>
-
-        <!-- Date -->
-        <label for="plant-date">Date of Planting/Observation:</label>
-        <input type="date" id="plant-date" required>
-
-        <!-- Botanical Characteristics -->
-        <label for="characteristics">Botanical Characteristics:</label>
-        <textarea id="characteristics" rows="2" placeholder="Leaf shape, color, growth stage..."></textarea>
-
-        <!-- Care/Observation Notes -->
-        <label for="care-notes">Care/Observation Notes:</label>
-        <textarea id="care-notes" rows="2" placeholder="Watering schedule, sunlight, pests..."></textarea>
-
-        <button type="submit">Add Plant</button>
+  <div class="container">
+    <div class="section">
+      <h2>Add New Plant Entry</h2>
+      <form id="plantForm">
+        <label for="plantName">Plant Name:</label>
+        <input type="text" id="plantName" required>
+        <label for="entryDate">Date:</label>
+        <input type="date" id="entryDate" required>
+        <label for="careNotes">Care Notes:</label>
+        <textarea id="careNotes" rows="3" placeholder="Watered, fertilized, trimmed..."></textarea>
+        <label for="photoUpload">Photo:</label>
+        <input type="file" id="photoUpload" accept="image/*">
+        <button type="submit" class="submit-btn">Save Entry</button>
       </form>
-    </section>
-
-    <!-- ============  BOTANICAL INSIGHTS SECTION (OPTIONAL)  ============ -->
-    <section id="botanical-insights">
-      <h2>Botanical Insights (Optional)</h2>
-      <p>When you add a plant with a known scientific name, details appear here.</p>
-      <div id="insights-content">
-        <!-- Dynamically filled by script below if a match is found -->
-      </div>
-    </section>
-
-    <!-- ============  ENTRIES DISPLAY SECTION  ============ -->
-    <section id="plant-entries-section">
-      <h2>My Plant Entries</h2>
-      <div id="entries-container"></div>
-    </section>
-  </main>
-
+    </div>
+    <div class="section filter-section">
+      <h2>Filter by Plant</h2>
+      <select id="plantFilter">
+        <option value="all">Show All Plants</option>
+      </select>
+    </div>
+    <div class="section">
+      <h2>Plant Journal Timeline</h2>
+      <div class="entry-list" id="entryList"></div>
+    </div>
+    <div class="section export-buttons">
+      <h2>Export Journal</h2>
+      <button onclick="exportAsJSON()">Export as JSON</button>
+      <button onclick="exportAsText()">Export as Text</button>
+    </div>
+    <div class="section">
+      <h2>Photo Comparison Gallery</h2>
+      <div class="gallery-grid" id="photoGallery"></div>
+    </div>
+    <div class="section chart-section">
+      <h2>Care Activity Summary</h2>
+      <canvas id="careChart"></canvas>
+    </div>
+  </div>
   <script>
-    /**********************************************
-     * 1. Optional: Built-In Botanical Insights Data
-     **********************************************/
-    const BOTANICAL_DATA = {
-      "Ficus elastica": {
-        family: "Moraceae",
-        care: "Prefers bright, indirect light and moderate watering. Keep soil evenly moist.",
-        notes: "Rubber plants can grow tall and need occasional pruning."
-      },
-      "Aloe vera": {
-        family: "Asphodelaceae",
-        care: "Needs bright light and minimal watering (succulent).",
-        notes: "Soothes skin irritations when applied topically."
-      },
-      // Add more as needed...
-    };
+    const form = document.getElementById("plantForm");
+    const entryList = document.getElementById("entryList");
+    const filter = document.getElementById("plantFilter");
+    const photoInput = document.getElementById("photoUpload");
+    let entries = JSON.parse(localStorage.getItem("plantEntries") || "[]");
 
-    /**********************************************
-     * 2. Initialize or Retrieve Entries from Local Storage
-     **********************************************/
-    let plantEntries = JSON.parse(localStorage.getItem("plantEntries")) || [];
-
-    function savePlantEntries() {
-      localStorage.setItem("plantEntries", JSON.stringify(plantEntries));
+    function saveEntries() {
+      localStorage.setItem("plantEntries", JSON.stringify(entries));
     }
 
-    /**********************************************
-     * 3. Form Submission and Handling
-     **********************************************/
-    const plantForm = document.getElementById("plant-form");
-    const plantImageInput = document.getElementById("plant-image");
-    const scientificNameInput = document.getElementById("scientific-name");
-    const commonNameInput = document.getElementById("common-name");
-    const plantDateInput = document.getElementById("plant-date");
-    const characteristicsInput = document.getElementById("characteristics");
-    const careNotesInput = document.getElementById("care-notes");
+    function updateFilterOptions() {
+      const uniquePlants = [...new Set(entries.map(e => e.name))];
+      filter.innerHTML = '<option value="all">Show All Plants</option>';
+      uniquePlants.forEach(name => {
+        const opt = document.createElement("option");
+        opt.value = name;
+        opt.textContent = name;
+        filter.appendChild(opt);
+      });
+    }
 
-    plantForm.addEventListener("submit", async (event) => {
-      event.preventDefault();
+    function renderEntries() {
+      entryList.innerHTML = '';
+      const filtered = filter.value === "all" ? entries : entries.filter(e => e.name === filter.value);
+      filtered.reverse().forEach(entry => {
+        const div = document.createElement("div");
+        div.className = "entry";
+        div.innerHTML = `<div class="entry-time">${entry.date} – <strong>${entry.name}</strong></div>
+                         <div>${entry.notes || "(No notes)"}</div>
+                         ${entry.photo ? `<img src="${entry.photo}" />` : ""}`;
+        entryList.appendChild(div);
+      });
+    }
 
-      // Read form values
-      const scientificName = scientificNameInput.value.trim();
-      const commonName = commonNameInput.value.trim();
-      const plantDate = plantDateInput.value;
-      const characteristics = characteristicsInput.value.trim();
-      const careNotes = careNotesInput.value.trim();
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = document.getElementById("plantName").value.trim();
+      const date = document.getElementById("entryDate").value;
+      const notes = document.getElementById("careNotes").value.trim();
+      const file = photoInput.files[0];
 
-      // Convert image file to Base64 (if an image is provided)
-      let base64Image = "";
-      if (plantImageInput.files && plantImageInput.files[0]) {
-        base64Image = await convertToBase64(plantImageInput.files[0]);
+      if (!name || !date) {
+        alert("Please fill in the plant name and date.");
+        return;
       }
 
-      // Create a new plant entry object
-      const newEntry = {
-        id: Date.now(),
-        image: base64Image,
-        scientificName,
-        commonName,
-        date: plantDate,
-        characteristics,
-        careNotes
-      };
+      let photoBase64 = "";
+      if (file) {
+        try {
+          photoBase64 = await toBase64(file);
+        } catch (err) {
+          console.error("Error reading image file:", err);
+          alert("Failed to read image file.");
+          return;
+        }
+      }
 
-      // Add to array and save
-      plantEntries.push(newEntry);
-      savePlantEntries();
-
-      // Clear the form
-      plantForm.reset();
-
-      // Re-render entries
-      renderPlantEntries();
-
-      // Show optional botanical insights (if available)
-      showBotanicalInsights(scientificName);
+      const newEntry = { name, date, notes, photo: photoBase64 };
+      entries.push(newEntry);
+      saveEntries();
+      updateFilterOptions();
+      renderEntries();
+      renderGallery();
+      renderCareChart();
+      form.reset();
     });
 
-    // Convert File to Base64
-    function convertToBase64(file) {
+    function toBase64(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
-        reader.readAsDataURL(file);
         reader.onload = () => resolve(reader.result);
-        reader.onerror = (error) => reject(error);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
       });
     }
 
-    /**********************************************
-     * 4. Render Plant Entries
-     **********************************************/
-    const entriesContainer = document.getElementById("entries-container");
-
-    function renderPlantEntries() {
-      entriesContainer.innerHTML = "";
-
-      plantEntries.forEach((entry) => {
-        const card = document.createElement("div");
-        card.className = "plant-card";
-
-        // Image (if any)
-        if (entry.image) {
+    function renderGallery() {
+      const gallery = document.getElementById("photoGallery");
+      gallery.innerHTML = '';
+      entries.forEach(e => {
+        if (e.photo) {
           const img = document.createElement("img");
-          img.src = entry.image;
-          img.alt = entry.commonName || "Plant Image";
-          card.appendChild(img);
+          img.src = e.photo;
+          img.alt = e.name;
+          gallery.appendChild(img);
         }
-
-        // Card content
-        const cardContent = document.createElement("div");
-        cardContent.className = "card-content";
-
-        // Title
-        const cardTitle = document.createElement("h3");
-        cardTitle.textContent = entry.commonName
-          ? `${entry.commonName} (${entry.scientificName})`
-          : entry.scientificName;
-        cardContent.appendChild(cardTitle);
-
-        // Date
-        const datePara = document.createElement("p");
-        datePara.textContent = `Date: ${entry.date}`;
-        cardContent.appendChild(datePara);
-
-        // Characteristics
-        if (entry.characteristics) {
-          const charPara = document.createElement("p");
-          charPara.textContent = `Characteristics: ${entry.characteristics}`;
-          cardContent.appendChild(charPara);
-        }
-
-        // Care notes
-        if (entry.careNotes) {
-          const carePara = document.createElement("p");
-          carePara.textContent = `Care/Notes: ${entry.careNotes}`;
-          cardContent.appendChild(carePara);
-        }
-
-        // Card actions (edit/delete)
-        const cardActions = document.createElement("div");
-        cardActions.className = "card-actions";
-
-        // Edit button
-        const editButton = document.createElement("button");
-        editButton.textContent = "Edit";
-        editButton.addEventListener("click", () => {
-          // Re-fill the form
-          scientificNameInput.value = entry.scientificName;
-          commonNameInput.value = entry.commonName;
-          plantDateInput.value = entry.date;
-          characteristicsInput.value = entry.characteristics;
-          careNotesInput.value = entry.careNotes;
-
-          // Remove the old entry so we don't duplicate after editing
-          plantEntries = plantEntries.filter((e) => e.id !== entry.id);
-          savePlantEntries();
-          renderPlantEntries();
-        });
-        cardActions.appendChild(editButton);
-
-        // Delete button
-        const deleteButton = document.createElement("button");
-        deleteButton.textContent = "Delete";
-        deleteButton.addEventListener("click", () => {
-          plantEntries = plantEntries.filter((e) => e.id !== entry.id);
-          savePlantEntries();
-          renderPlantEntries();
-        });
-        cardActions.appendChild(deleteButton);
-
-        cardContent.appendChild(cardActions);
-        card.appendChild(cardContent);
-        entriesContainer.appendChild(card);
       });
     }
 
-    /**********************************************
-     * 5. Show Botanical Insights (Optional)
-     **********************************************/
-    const insightsContent = document.getElementById("insights-content");
-
-    function showBotanicalInsights(scientificName) {
-      insightsContent.innerHTML = ""; // clear old info
-
-      if (BOTANICAL_DATA[scientificName]) {
-        const data = BOTANICAL_DATA[scientificName];
-        const infoDiv = document.createElement("div");
-        infoDiv.innerHTML = `
-          <h3>Insights for ${scientificName}</h3>
-          <p><strong>Family:</strong> ${data.family}</p>
-          <p><strong>Care:</strong> ${data.care}</p>
-          <p><strong>Notes:</strong> ${data.notes}</p>
-        `;
-        insightsContent.appendChild(infoDiv);
-      } else {
-        // Optionally show a placeholder if no data found
-        insightsContent.textContent = "No built-in insights found for this plant.";
-      }
+    function exportAsJSON() {
+      if (!entries.length) return alert("No entries to export!");
+      const blob = new Blob([JSON.stringify(entries, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "plant_journal.json";
+      a.click();
+      URL.revokeObjectURL(url);
     }
 
-    /**********************************************
-     * 6. Initialize on Page Load
-     **********************************************/
-    document.addEventListener("DOMContentLoaded", () => {
-      renderPlantEntries();
-    });
-  </script>
+    function exportAsText() {
+      if (!entries.length) return alert("No entries to export!");
+      const text = entries.map(e => `Date: ${e.date}\nPlant: ${e.name}\nNotes: ${e.notes || "(No notes)"}\n`).join('\n---\n');
+      const blob = new Blob([text], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "plant_journal.txt";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
 
+    function toggleTheme() {
+      document.body.classList.toggle("dark-mode");
+    }
+
+    function renderCareChart() {
+      const dataMap = {};
+      entries.forEach(e => {
+        const name = e.name;
+        if (!dataMap[name]) dataMap[name] = 0;
+        dataMap[name] += 1;
+      });
+      const ctx = document.getElementById('careChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: Object.keys(dataMap),
+          datasets: [{
+            label: 'Entries Per Plant',
+            data: Object.values(dataMap),
+            backgroundColor: ['#74b49b', '#4a7c59', '#a7d7c5', '#6a994e', '#3e8e41', '#b5ead7', '#ffeaa7'],
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false },
+            title: { display: true, text: 'Total Care Logs per Plant' }
+          },
+          scales: {
+            y: { beginAtZero: true, ticks: { stepSize: 1 } }
+          }
+        }
+      });
+    }
+
+    updateFilterOptions();
+    renderEntries();
+    renderGallery();
+    renderCareChart();
+  </script>
 </body>
 </html>
